@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ethers": "^6.6.4",
+    "ethers": "^5.7.0",
     "node-cron": "^3.0.2",
     "web3": "^1.8.0"
   }
