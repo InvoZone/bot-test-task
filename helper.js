@@ -46,39 +46,31 @@ async function getPriceImpact(pair, poolAddress, lp) {
 
 
 
-async function getPrice(amount) {
+async function getPrice(amount, pair, RouterABI, routerAddres, dex) {
     console.log("\n-----Price at Ethereum DEXs----")
 
-    let coin1ToSell = web3.utils.toWei(`${amount}`, "ether");
-    let amountOutUni;
-    let amountOutPk;
+    let amountOfCoins = web3.utils.toWei(`${amount}`, "ether");
+    let amountOut;
+    // let amountOut;
 
     try {
-        let routerUniswap = await new web3.eth.Contract(
-            consts.RouterABI,
-            consts.uniswap_address
+        let router = await new web3.eth.Contract(
+            RouterABI,
+            routerAddres
         );
 
-        amountOutUni = await routerUniswap.methods
-            .getAmountsOut(coin1ToSell, [consts.USDT, consts.USDC])
+        amountOut = await router.methods
+            .getAmountsOut(amountOfCoins, [pair.address1, pair.address2])
             .call();
-        amountOutUni = web3.utils.fromWei(amountOutUni[1], "ether");
-
-        let routerPancake = await new web3.eth.Contract(
-            consts.RouterABI,
-            consts.pancake_address
-        );
-
-        amountOutPk = await routerPancake.methods
-            .getAmountsOut(coin1ToSell, [consts.USDC, consts.USDT])
-            .call();
-        amountOutPk = web3.utils.fromWei(amountOutPk[1], "ether");
-
-
-        console.log("Uniswap: ", amountOutUni + " USDT" + ", Pancakeswap: ", amountOutPk + " USDC");
-        let prices = [amountOutUni, amountOutPk]
         
-        return prices;
+        amountOut = web3.utils.fromWei(amountOut[1], 'ether');
+
+
+
+        console.log(`${dex}:  ${amountOut}  ${pair.symbol1}`);
+
+
+        return amountOut;
     } catch (error) {
         console.log("error: ", error);
     }
